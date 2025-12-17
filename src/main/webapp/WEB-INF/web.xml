@@ -7,6 +7,12 @@
 
     <display-name>Inventory Tracker</display-name>
 
+    <!-- ✅ Make / load index.jsp -->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <!-- JNDI DataSource -->
     <resource-ref>
         <description>Inventory DB</description>
         <res-ref-name>jdbc/InventoryDB</res-ref-name>
@@ -14,5 +20,68 @@
         <res-auth>Container</res-auth>
     </resource-ref>
 
-</web-app>
+    <!-- ========================= -->
+    <!-- MVC Controllers (Servlets) -->
+    <!-- ========================= -->
 
+    <!-- List page -->
+    <servlet>
+        <servlet-name>InventoryListServlet</servlet-name>
+        <servlet-class>com.inventorytracker.controller.InventoryListServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>InventoryListServlet</servlet-name>
+        <url-pattern>/inventory</url-pattern>
+    </servlet-mapping>
+
+    <!-- Create item -->
+    <servlet>
+        <servlet-name>InventoryCreateServlet</servlet-name>
+        <servlet-class>com.inventorytracker.controller.InventoryCreateServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>InventoryCreateServlet</servlet-name>
+        <url-pattern>/inventory/create</url-pattern>
+    </servlet-mapping>
+
+    <!-- Update item -->
+    <servlet>
+        <servlet-name>InventoryUpdateServlet</servlet-name>
+        <servlet-class>com.inventorytracker.controller.InventoryUpdateServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>InventoryUpdateServlet</servlet-name>
+        <url-pattern>/inventory/update</url-pattern>
+    </servlet-mapping>
+
+    <!-- Delete item -->
+    <servlet>
+        <servlet-name>InventoryDeleteServlet</servlet-name>
+        <servlet-class>com.inventorytracker.controller.InventoryDeleteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>InventoryDeleteServlet</servlet-name>
+        <url-pattern>/inventory/delete</url-pattern>
+    </servlet-mapping>
+
+    <!-- Export -->
+    <servlet>
+        <servlet-name>InventoryExportServlet</servlet-name>
+        <servlet-class>com.inventorytracker.controller.InventoryExportServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>InventoryExportServlet</servlet-name>
+        <url-pattern>/inventory/export</url-pattern>
+    </servlet-mapping>
+
+    <!-- API (integration test endpoint) -->
+    <servlet>
+        <servlet-name>InventoryApiServlet</servlet-name>
+        <servlet-class>com.inventorytracker.controller.InventoryApiServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>InventoryApiServlet</servlet-name>
+        <url-pattern>/api/inventory</url-pattern>
+    </servlet-mapping>
+
+</web-app>
