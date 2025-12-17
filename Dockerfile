@@ -7,23 +7,17 @@ RUN mvn -q -DskipTests package
 
 # ---- run stage ----
 FROM tomcat:10.1-jdk17-temurin
+
+# remove default apps
 RUN rm -rf /usr/local/tomcat/webapps/*
+
+# disable shutdown port (stops "Invalid shutdown command" spam)
+RUN sed -i 's/port="8005"/port="-1"/' /usr/local/tomcat/conf/server.xml
+
+# deploy ROOT.war (pom.xml should have <finalName>ROOT</finalName>)
 COPY --from=build /app/target/ROOT.war /usr/local/tomcat/webapps/ROOT.war
 
-RUN mkdir -p /usr/local/tomcat/conf/Catalina/localhost
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
-# ✅ disable shutdown port
-COPY server.xml /usr/local/tomcat/conf/server.xml
-
-EXPOSE 8080
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-
-# deploy app
-COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/ROOT.war
-
-# add entrypoint that writes JNDI resource from env vars
+# entrypoint script writes JNDI DataSource from env vars then starts Tomcat
 RUN mkdir -p /usr/local/tomcat/conf/Catalina/localhost
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
