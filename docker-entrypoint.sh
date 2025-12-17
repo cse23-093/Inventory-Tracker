@@ -1,11 +1,18 @@
 #!/usr/bin/env sh
-set -e
+set -ex
 
+echo "Starting Inventory Tracker container..."
+
+# ---- required env vars ----
 : "${DB_URL:?DB_URL is required}"
 : "${DB_USER:?DB_USER is required}"
 : "${DB_PASS:?DB_PASS is required}"
 
-# XML-escape values (handles &, <, >, ", ')
+echo "DB_URL=$DB_URL"
+echo "DB_USER=$DB_USER"
+echo "DB_PASS is set? ${DB_PASS:+yes}"
+
+# ---- XML escape helper ----
 xml_escape() {
   printf '%s' "$1" | sed \
     -e 's/&/\&amp;/g' \
@@ -19,6 +26,8 @@ DB_URL_ESCAPED="$(xml_escape "$DB_URL")"
 DB_USER_ESCAPED="$(xml_escape "$DB_USER")"
 DB_PASS_ESCAPED="$(xml_escape "$DB_PASS")"
 
+echo "Writing Tomcat JNDI ROOT.xml..."
+
 mkdir -p /usr/local/tomcat/conf/Catalina/localhost
 
 cat > /usr/local/tomcat/conf/Catalina/localhost/ROOT.xml <<EOF
@@ -31,6 +40,8 @@ cat > /usr/local/tomcat/conf/Catalina/localhost/ROOT.xml <<EOF
       maxTotal="20"
       maxIdle="10"
       maxWaitMillis="-1"
+      validationQuery="SELECT 1"
+      testOnBorrow="true"
       username="${DB_USER_ESCAPED}"
       password="${DB_PASS_ESCAPED}"
       driverClassName="com.mysql.cj.jdbc.Driver"
@@ -38,4 +49,5 @@ cat > /usr/local/tomcat/conf/Catalina/localhost/ROOT.xml <<EOF
 </Context>
 EOF
 
+echo "Starting Tomcat on port 8080..."
 exec catalina.sh run
