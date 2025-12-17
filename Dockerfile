@@ -7,8 +7,18 @@ RUN mvn -q -DskipTests package
 
 # ---- run stage ----
 FROM tomcat:10.1-jdk17-temurin
-
 RUN rm -rf /usr/local/tomcat/webapps/*
+COPY --from=build /app/target/ROOT.war /usr/local/tomcat/webapps/ROOT.war
+
+RUN mkdir -p /usr/local/tomcat/conf/Catalina/localhost
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# ✅ disable shutdown port
+COPY server.xml /usr/local/tomcat/conf/server.xml
+
+EXPOSE 8080
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 # deploy app
 COPY --from=build /app/target/*.war /usr/local/tomcat/webapps/ROOT.war
