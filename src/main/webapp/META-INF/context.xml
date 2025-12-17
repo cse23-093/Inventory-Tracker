@@ -6,8 +6,8 @@
             maxTotal="20"
             maxIdle="10"
             maxWaitMillis="-1"
-            username="root"
-            password="Ofhile2cool4ril."
+            username="${env.DB_USER}"
+            password="${env.DB_PASS}"
             driverClassName="com.mysql.cj.jdbc.Driver"
-            url="jdbc:mysql://localhost:3306/inventory_db?useSSL=false&amp;serverTimezone=UTC"/>
+            url="${env.DB_URL}"/>
 </Context>
