@@ -1,90 +1,113 @@
-Inventory Tracker with Alerts
+# Inventory Tracker Web Application
 
-A web-based inventory management system that simulates a warehouse inventory tracker with low-stock alerts, built using Java, Jakarta Servlets, JSP, JSTL, Bootstrap, and MySQL.
-
-This project was developed as a technical assignment to demonstrate full-stack development, clean MVC architecture, data persistence, testing, and deployment readiness.
-
----
-
-## 🚀 Features
-
-- Add new inventory items (name, quantity, category)
-- Update existing items
-- Delete items
-- View all inventory items in a clean, intuitive UI
-- Automatically highlight **low-stock items** (quantity < 5)
-- Export inventory data as **CSV** or **JSON**
-- REST-style API endpoint for inventory data (`/api/inventory`)
+A Java-based Inventory Management Web Application developed using **Jakarta EE**, **Servlets**, **JSP**, and **MySQL**, following the **MVC architecture**.  
+The application allows users to view, add, update, and delete inventory items through a web interface.
 
 ---
 
-## 🏗️ Architecture
-
-The application follows a **Model–View–Controller (MVC)** architecture:
-
-- **Model**  
-  JavaBeans representing inventory entities and business logic (e.g., low-stock detection, validation)
-
-- **View**  
-  JSP pages using **JSTL and EL only** (no scriptlets), styled with **Bootstrap 5**
-
-- **Controller**  
-  Jakarta Servlets handling request routing and coordinating between views and data access
-
-- **DAO Layer**  
-  Responsible for all database operations using **JNDI connection pooling**
+## 🔗 Live Deployment
+**Render URL:**  
+https://inventory-tracker-539a.onrender.com
 
 ---
 
-## 🧰 Tech Stack
+## 📦 GitHub Repository
+https://github.com/cse23-093/Inventory-Tracker
 
-- Java 17+
-- Jakarta Servlet API 6
-- JSP + JSTL + Expression Language (EL)
-- Bootstrap 5 (via WebJars)
-- MySQL
+---
+
+## 🛠️ Technologies Used
+
+- Java 17 (Jakarta EE)
+- Servlets & JSP
+- JSTL / EL
+- MVC Architecture
+- MySQL (AWS RDS)
+- JNDI DataSource (Tomcat DBCP)
+- Apache Tomcat 10.1
 - Maven
-- JUnit 5
-- Embedded Tomcat (for integration testing)
-- IntelliJ IDEA
+- Docker
+- Bootstrap 5
+- Git & GitHub
 
 ---
 
-## 💾 Data Persistence Choice & Justification
+## 📂 Project Structure
 
-**Chosen storage:** MySQL (Relational Database)
+Inventory-Tracker
+├── src
+│ ├── main
+│ │ ├── java
+│ │ │ └── com.inventorytracker
+│ │ │ ├── controller
+│ │ │ │ └── InventoryListServlet.java
+│ │ │ ├── dao
+│ │ │ │ ├── InventoryItemDAO.java
+│ │ │ │ └── InventoryItemDAOImpl.java
+│ │ │ ├── model
+│ │ │ │ └── InventoryItem.java
+│ │ │ └── util
+│ │ │ └── DBConnectionUtil.java
+│ │ ├── webapp
+│ │ │ ├── views
+│ │ │ │ └── inventory-list.jsp
+│ │ │ ├── index.jsp
+│ │ │ └── WEB-INF
+│ │ │ └── web.xml
+│ └── test
+│ └── java
+│ └── com.inventorytracker
+│ └── dao
+│ └── InventoryItemDAOTest.java
+├── Dockerfile
+├── docker-entrypoint.sh
+├── pom.xml
+└── README.md
 
-**Why MySQL:**
-- Strong consistency and reliability
-- Well-suited for structured data such as inventory records
-- Supports indexing and constraints
-- Easily integrates with Java via JDBC
-- Production-ready and widely used in enterprise systems
-
-**Trade-offs:**
-- Requires schema design and setup
-- Slightly more overhead than flat files
-- Less flexible than NoSQL for unstructured data
-
-For this use case (inventory with strict fields and relationships), a relational database is the most appropriate choice.
+yaml
+Copy code
 
 ---
 
-## 🔌 Database Setup
+## ✅ Application Features
 
-Create the database and table using the following SQL:
+- View all inventory items
+- Add new inventory items
+- Update existing inventory items
+- Delete inventory items
+- MySQL database integration
+- Connection pooling via JNDI
+- Responsive UI using Bootstrap
+- Deployed using Docker on Render
 
-```sql
+---
+
+## 🧪 Testing
+
+- Unit and DAO-level tests are located under:
+  src/test/java
+
+markdown
+Copy code
+- Tests use **JUnit 5** and **H2 in-memory database** for isolated testing.
+- Maven Surefire Plugin is configured for test execution.
+
+To run tests locally:
+```bash
+mvn test
+🗄️ Database Schema
+sql
+Copy code
 CREATE DATABASE IF NOT EXISTS inventory_db;
 USE inventory_db;
 
-CREATE TABLE inventory_item (
+CREATE TABLE IF NOT EXISTS inventory_item (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     quantity INT NOT NULL,
     category VARCHAR(50) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL
+    updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
 );
 
 INSERT INTO inventory_item (name, quantity, category) VALUES
@@ -93,98 +116,19 @@ INSERT INTO inventory_item (name, quantity, category) VALUES
 ('Office Chair', 7, 'Furniture'),
 ('Notebook A4', 2, 'Stationery'),
 ('Wireless Mouse', 15, 'Electronics');
-🔄 Connection Pooling
-The application uses JNDI connection pooling configured in:
+⚙️ Configuration Notes
+Database connection is managed via JNDI (jdbc/InventoryDB)
 
-META-INF/context.xml
+Environment variables used in deployment:
 
-WEB-INF/web.xml
+DB_URL
 
-This improves performance and scalability by reusing database connections instead of creating a new connection per request.
+DB_USERNAME
 
-🧪 Running Tests
-This project includes unit tests and integration tests using JUnit 5.
+DB_PASSWORD
 
-Prerequisites
-Java 17+
+Tomcat shutdown port is disabled for cloud compatibility.
 
-Maven (or IntelliJ’s built-in Maven)
-
-Run All Tests
-From the project root directory (the folder containing pom.xml):
-
-bash
-Copy code
-mvn clean test
-Alternatively, tests can be run directly from IntelliJ IDEA:
-
-Using the Maven → Lifecycle → test
-
-Or by right-clicking src/test/java → Run All Tests
-
-Test Coverage
-Unit tests
-
-Inventory validation
-
-Low-stock detection logic
-
-DAO tests
-
-CRUD operations using an in-memory database
-
-Integration test
-
-Starts an embedded Tomcat server
-
-Calls /api/inventory
-
-Verifies correct JSON response
-
-🌐 API Endpoint
-GET /api/inventory
-Returns all inventory items in JSON format.
-
-This endpoint is used for integration testing and export functionality.
-
-▶️ Running the Application
-Configure MySQL credentials in META-INF/context.xml
-
-Deploy the project as a WAR to Apache Tomcat
-
-Access the application at:
-
-bash
-Copy code
-http://localhost:8080/inventory-tracker/
-☁️ Deployment
-The project is prepared for deployment using:
-
-Apache Tomcat
-
-Cloud platforms supporting Java web applications (Render, Railway, AWS EC2 free tier)
-
-A public GitHub repository contains the full source code and commit history.
-
-📁 Project Structure
-css
-Copy code
-src/
- ├── main/
- │   ├── java/
- │   │   └── com.inventorytracker/
- │   │       ├── controller/
- │   │       ├── dao/
- │   │       ├── model/
- │   │       └── util/
- │   └── webapp/
- │       ├── META-INF/
- │       ├── WEB-INF/
- │       ├── views/
- │       └── index.jsp
- └── test/
-     └── java/
-         └── com.inventorytracker/
-📝 Author
-Developed by Aone Seanego
+👤 Author
+Aone Seanego
 Computer Systems Engineering Student
